@@ -40,7 +40,7 @@ await mailService.sendMail({
                 } else {
                     return
                 }
-                return `Happy Birthday ${user.name}`m 
+                return `Happy Birthday ${user.name}`
             });
             
         } catch (error: any) {
