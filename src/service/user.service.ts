@@ -55,9 +55,15 @@ class UserService {
                 if (now > dob) {
                     dob.setFullYear(now.getFullYear());
                 }
+                 const today = new Date();
+                    const currentMonth = today.getMonth() + 1;
+                    const currentDay = today.getDate();
 
-                schedule.scheduleJob(dob, async () => {
-                    console.log(user.DOB,'h')
+                    const userDOB = new Date(user.DOB); 
+                        const userBirthMonth = userDOB.getMonth() + 1;
+                    const userBirthDay = userDOB.getDate();
+                if (currentMonth === userBirthMonth && currentDay === userBirthDay) {
+                     schedule.scheduleJob(dob, async () => {
                     await mailService.sendMail({
                         to: user.email,
                         text: `Hello ${user.name}`,
@@ -67,7 +73,12 @@ class UserService {
                     console.log(`Birthday email sent to ${user.name}`);
 
                 });
+                } else {
+                    return
+                }
+                return `Happy Birthday ${user.name}`
             });
+            
         } catch (error: any) {
             throw new Error(error?.message);
         }

@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import webTokenService from "../service/webToken.service";
 import { DotenvConfig } from "../config/env.config";
+import UserService from "../service/user.service";
 
 export class Socket {
     async Socket(server: any) {
@@ -27,5 +28,16 @@ export class Socket {
             }
         })
 
+    io.on('connection', async (socket)=>{
+        socket.join(socket.data.user.id)
+        const userService = new UserService()
+        try {
+           const users =  await userService.wishUserBirthday()
+                        socket.emit('birthdayWish',users );
+
+        } catch (error) {
+            console.error('Error:', error)
+        }
+    })
         
 }}
