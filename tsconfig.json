@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "outDir": "./build/",
+    "rootDir": "./src", // Set root directory for source files
+    "strict": true,
+    "emitDecoratorMetadata": true, // Ensure decorators emit metadata
+    "experimentalDecorators": true, // Enable experimental decorator support
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["node_modules", "public"]
+    },
+    "typeRoots": ["src/types", "./node_modules/@types"]
+  },
+  "include": ["src/**/*.ts"], // Include TypeScript files in src
+  "exclude": ["node_modules"]
+}
