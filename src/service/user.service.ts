@@ -87,3 +87,9 @@ class UserService {
 }
 
 export default UserService
+/** const userBirthday = await this.userRepo.createQueryBuilder('user')
+                .where('EXTRACT(MONTH FROM user.DOB) =:currentMonth', { currentMonth })
+                .andWhere("EXTRACT(DAY FROM user.DOB) =:currentDay", { currentDay })
+            .getMany()
+            for (const user of userBirthday) {
+} */

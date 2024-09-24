@@ -3,8 +3,8 @@ import {Socket} from './socket/socket'
 import app from './config/app.config'
 import { DotenvConfig } from './config/env.config'
 import { AppDataSource } from './config/database.config'
-import { CronService } from './service/cron.service'
 import UserService from './service/user.service'
+import ReminderService from './service/reminder.service'
 function listen() {
     const socket = new Socket()
     const PORT = DotenvConfig.PORT
@@ -13,8 +13,8 @@ function listen() {
     httpServer.listen(PORT)
     console.log(`Server is Listening in port: ${DotenvConfig.PORT}`)
 }
-const cronService = new CronService()
-cronService.startjob()
+const reminderService = new ReminderService()
+reminderService.startjob()
 
 AppDataSource.initialize()
     .then(async() => {

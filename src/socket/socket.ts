@@ -33,7 +33,7 @@ export class Socket {
         const userService = new UserService()
         try {
            const users =  await userService.wishUserBirthday()
-                        socket.emit('birthdayWish',users );
+            socket.emit('birthdayWish',users );
 
         } catch (error) {
             console.error('Error:', error)
