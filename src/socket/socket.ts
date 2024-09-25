@@ -12,14 +12,17 @@ export class Socket {
     });
 
     io.use((socket, next) => {
-      const socketToken = socket.handshake.auth.token; 
+      const socketToken = socket.handshake.auth.token;
       if (!socketToken) {
         return next(new Error("You are not authorized"));
       }
       try {
-        const auth = webTokenService.verify(socketToken, DotenvConfig.ACCESS_TOKEN_SECRET);
+        const auth = webTokenService.verify(
+          socketToken,
+          DotenvConfig.ACCESS_TOKEN_SECRET,
+        );
         if (auth) {
-          socket.data.user = auth; 
+          socket.data.user = auth;
           next();
         } else {
           next(new Error("You are not authorized"));
@@ -30,18 +33,18 @@ export class Socket {
     });
 
     io.on("connection", async (socket) => {
-      const userId = socket.data.user.id; 
+      const userId = socket.data.user.id;
       console.log("User connected:", userId);
-      socket.join(userId); 
+      socket.join(userId);
 
       const reminderService = new ReminderService();
 
       try {
         const birthdayMessage = await reminderService.checkBirthdays(userId);
         if (birthdayMessage) {
-          socket.emit("birthday", birthdayMessage); 
+          socket.emit("birthday", birthdayMessage);
         } else {
-          console.log('No birthday messages found');
+          console.log("No birthday messages found");
         }
       } catch (error) {
         console.error("Error in sending birthday message:", error);
@@ -51,6 +54,5 @@ export class Socket {
         console.log("User disconnected:", userId);
       });
     });
-
   }
 }
