@@ -23,7 +23,6 @@ export const authentication = () => {
     } catch (err: any) {
       if (err.name === 'TokenExpiredError') {
         throw new Error('Token Expired, Please sign in again')
-        return;
       }
       return next(new Error('You are not authorized'));
     }

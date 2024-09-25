@@ -3,9 +3,9 @@ import { AppDataSource } from "../config/database.config";
 import { User } from "../entities/user.entity";
 import BcryptService from "./bcrypt.service";
 import { MailService } from "./mail.service";
-import schedule from 'node-schedule'
 const bcryptService = new BcryptService()
 const mailService = new MailService()
+import HttpException from "../utils/HttpException.utils";
 
 class UserService {
     constructor(
@@ -15,7 +15,8 @@ class UserService {
     async signup(data:UserDTO) {
         try {
             const emailExist = await this.userRepo.findOneBy({ email: data.email })
-            if (emailExist) throw new Error('Email is already registered')
+            if (emailExist) throw HttpException.notFound('Entered Email is not registered yet')
+
             
             const hashPassword = await bcryptService.hash(data.password)
             const addUser = this.userRepo.create({
@@ -34,62 +35,42 @@ class UserService {
             return addUser
         } catch (error:unknown) {
             if (error instanceof Error) {
-                throw new Error(error?.message)
+                throw HttpException.badRequest(error.message)
             }
             else {
-                throw new Error('Internal Server Error')
+                throw HttpException.internalServerError
             }
         }
     }
 
-   async wishUserBirthday() {
+  async login(data: UserDTO) {
+    try {
+      const user = await this.userRepo.findOne({
+        where: [{ email: data.email }],
+        select: ['id', 'email', 'password','name','DOB','role'],
+      })
+      if (!user) throw HttpException.notFound('Invalid Email')
+      const passwordMatched = await bcryptService.compare(data.password, user.password)
+        if (!passwordMatched) {
+          throw HttpException.badRequest('Password didnot matched')
+           }
+      return user
+    } catch (error: any) {
+               throw HttpException.badRequest(error.message)
+    }
+  }
+    
+    async getByid(id: string) {
         try {
-            const users = await this.userRepo.find();
-            if (!users.length) throw new Error('No users found');
-
-            users.forEach(user => {
-                const dob = new Date(user.DOB);
-                const now = new Date();
-                dob.setFullYear(now.getFullYear());
-
-                if (now > dob) {
-                    dob.setFullYear(now.getFullYear());
-                }
-                 const today = new Date();
-                    const currentMonth = today.getMonth() + 1;
-                    const currentDay = today.getDate();
-
-                    const userDOB = new Date(user.DOB); 
-                        const userBirthMonth = userDOB.getMonth() + 1;
-                    const userBirthDay = userDOB.getDate();
-                if (currentMonth === userBirthMonth && currentDay === userBirthDay) {
-                     schedule.scheduleJob(dob, async () => {
-                    await mailService.sendMail({
-                        to: user.email,
-                        text: `Hello ${user.name}`,
-                        subject: 'Greeting of the day',
-                        html: `<p>Hey ${user.name}, Happy Birthday!</p>`
-                    });
-                    console.log(`Birthday email sent to ${user.name}`);
-
-                });
-                } else {
-                    return
-                }
-                return `Happy Birthday ${user.name}`
-            });
-            
-        } catch (error: any) {
-            throw new Error(error?.message);
+            const users = this.userRepo.createQueryBuilder('user')
+                .where('user.id =:id', { id })
+            const user = await users.getOne()
+            return user
+        } catch (error) {
+            throw HttpException.notFound('User not found')
         }
     }
 
 }
 
 export default UserService
-/** const userBirthday = await this.userRepo.createQueryBuilder('user')
-                .where('EXTRACT(MONTH FROM user.DOB) =:currentMonth', { currentMonth })
-                .andWhere("EXTRACT(DAY FROM user.DOB) =:currentDay", { currentDay })
-            .getMany()
-            for (const user of userBirthday) {
-} */

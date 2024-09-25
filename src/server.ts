@@ -3,7 +3,6 @@ import {Socket} from './socket/socket'
 import app from './config/app.config'
 import { DotenvConfig } from './config/env.config'
 import { AppDataSource } from './config/database.config'
-import UserService from './service/user.service'
 import ReminderService from './service/reminder.service'
 function listen() {
     const socket = new Socket()

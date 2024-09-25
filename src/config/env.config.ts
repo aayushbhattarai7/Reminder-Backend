@@ -16,7 +16,8 @@ export class DotenvConfig {
     static REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN!
 
   static API_KEY = process.env.API_KEY
-  
+    static DEBUG_MODE = process.env.DEBUG_MODE
+
   //* Email Information
   static MAIL_HOST = process.env.MAIL_HOST
   static MAIL_AUTH = process.env.MAIL_AUTH

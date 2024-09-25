@@ -29,6 +29,9 @@ importers:
       express:
         specifier: ^4.19.2
         version: 4.21.0
+      http-exception:
+        specifier: ^0.0.2
+        version: 0.0.2
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -581,6 +584,9 @@ packages:
   http-errors@2.0.0:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
     engines: {node: '>= 0.8'}
+
+  http-exception@0.0.2:
+    resolution: {integrity: sha512-AY1yoHbnmMVXG6dZteQzq8dObk1EztgWEIrPDu3kwyPFhJTwqxRiooLmjPyuBsUJ9zHwcBmknb0DyVBIiSphnA==}
 
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -1787,6 +1793,8 @@ snapshots:
       setprototypeof: 1.2.0
       statuses: 2.0.1
       toidentifier: 1.0.1
+
+  http-exception@0.0.2: {}
 
   iconv-lite@0.4.24:
     dependencies:

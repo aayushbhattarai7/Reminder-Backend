@@ -2,14 +2,16 @@ import { User } from "../entities/user.entity";
 import { AppDataSource } from "../config/database.config";
 import { MailService } from "./mail.service";
 import cron from 'node-cron'
+import UserService from "./user.service";
 const mailService = new MailService()
+const userService = new UserService()
 class ReminderService {
     constructor(
         private readonly userRepo = AppDataSource.getRepository(User)
     ) { }
 
-        startjob(){
-        cron.schedule('* * * * *', async () => {
+       async startjob(){
+        cron.schedule('0 0 * * *', async () => {
            try {
             const users = await this.userRepo.find();
             if (!users.length) throw new Error('No users found');
@@ -30,7 +32,6 @@ class ReminderService {
                         const userBirthMonth = userDOB.getMonth() + 1;
                     const userBirthDay = userDOB.getDate();
                 if (currentMonth === userBirthMonth && currentDay === userBirthDay) {
-                    console.log('happy Birthday')
 await mailService.sendMail({
                     to: user.email,
                     text: `Hello ${user.name}`,
@@ -48,8 +49,42 @@ await mailService.sendMail({
         }
            
 })
-}
+       }
+    async checkBirthdays(userId:string) {
+    const today = new Date();
+    const month = today.getMonth() + 1; 
+    const day = today.getDate(); 
+
+
+        const currentDate = new Date(today.getFullYear(), month - 1, day); 
+
+    const usersWithBirthdays = await this.userRepo.findOne({
+        where: {
+          id:userId,
+        DOB: currentDate,
+      },
+    });
+        if (!usersWithBirthdays) {
+             await this.userRepo.update(
+               { id: userId }, 
+               { wish: null } 
+           );
+        }
+        if (usersWithBirthdays) {
+           await this.userRepo.update(
+               { id: userId }, 
+               { wish: `Happy Birthday ${usersWithBirthdays.name}` } 
+           );
+            const data = await userService.getByid(userId)
+            return {message:`Happy Birthday ${usersWithBirthdays.name}`,data }
+        } else {
+            return null
+        }
+    
     }
     
-// }
+
+    
+    }
+
 export default ReminderService

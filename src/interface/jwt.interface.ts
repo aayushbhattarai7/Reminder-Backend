@@ -4,5 +4,4 @@ export interface IJwtOptions {
 }
 
 export interface IJwtPayload {
-  id: string
-}
+  id: string}
