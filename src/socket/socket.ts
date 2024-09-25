@@ -41,22 +41,22 @@ export class Socket {
       } catch (error) {
         console.error("Error in sending birthday message:", error);
       }
-
+ cron.schedule('15 1 * * *', async () => {
+  
+              const reminderService = new ReminderService();
+           const birthdayMessage = await reminderService.checkBirthdays(userId);
+        if (birthdayMessage) {
+          io.to(userId).emit("birthday", birthdayMessage);
+          console.log('ok')
+        }
+     
+    });
       socket.on("disconnect", () => {
         console.log("User disconnected:", userId);
       });
+     
     });
-
-    cron.schedule('59 18 * * *', async () => {
-      const reminderService = new ReminderService();
-      const allUsers = await reminderService.getAllUsers(); 
-
-      allUsers.forEach(async (user) => {
-        const birthdayMessage = await reminderService.checkBirthdays(user.id);
-        if (birthdayMessage) {
-          io.to(user.id).emit("birthday", birthdayMessage);
-        }
-      });
-    });
+   
+    
   }
 }

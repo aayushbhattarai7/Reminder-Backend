@@ -71,7 +71,6 @@ class ReminderService {
         );
       }
       const data = await userService.getByid(userId);
-      const messageCount = usersWithBirthdays.wish?.length;
       return { message: `Happy Birthday ${usersWithBirthdays.name}`, data };
     } else {
       return null;
