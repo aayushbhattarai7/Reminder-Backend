@@ -5,10 +5,9 @@ import { DotenvConfig } from "./config/env.config";
 import { AppDataSource } from "./config/database.config";
 import ReminderService from "./service/reminder.service";
 function listen() {
-  const socket = new Socket();
   const PORT = DotenvConfig.PORT;
   const httpServer = createServer(app);
-  socket.Socket(httpServer);
+    const socket = new Socket(httpServer);
   httpServer.listen(PORT);
   console.log(`Server is Listening in port: ${DotenvConfig.PORT}`);
 }

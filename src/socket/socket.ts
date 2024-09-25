@@ -2,9 +2,10 @@ import { Server } from "socket.io";
 import webTokenService from "../service/webToken.service";
 import { DotenvConfig } from "../config/env.config";
 import ReminderService from "../service/reminder.service";
+import cron from "node-cron";
 
 export class Socket {
-  Socket(server: any) {
+  constructor(server: any) {
     const io = new Server(server, {
       cors: {
         origin: "*",
@@ -36,22 +37,25 @@ export class Socket {
       const userId = socket.data.user.id;
       console.log("User connected:", userId);
       socket.join(userId);
-
-      const reminderService = new ReminderService();
-
       try {
-        const birthdayMessage = await reminderService.checkBirthdays(userId);
-        if (birthdayMessage) {
-          socket.emit("birthday", birthdayMessage);
-        } else {
-          console.log("No birthday messages found");
-        }
       } catch (error) {
         console.error("Error in sending birthday message:", error);
       }
 
       socket.on("disconnect", () => {
         console.log("User disconnected:", userId);
+      });
+    });
+
+    cron.schedule('59 18 * * *', async () => {
+      const reminderService = new ReminderService();
+      const allUsers = await reminderService.getAllUsers(); 
+
+      allUsers.forEach(async (user) => {
+        const birthdayMessage = await reminderService.checkBirthdays(user.id);
+        if (birthdayMessage) {
+          io.to(user.id).emit("birthday", birthdayMessage);
+        }
       });
     });
   }

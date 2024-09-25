@@ -72,12 +72,21 @@ class ReminderService {
       }
       const data = await userService.getByid(userId);
       const messageCount = usersWithBirthdays.wish?.length;
-      console.log(messageCount, "jajaj");
       return { message: `Happy Birthday ${usersWithBirthdays.name}`, data };
     } else {
       return null;
     }
   }
+   async getAllUsers() {
+    try {
+      const users = await this.userRepo.find();
+      return users;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw new Error("Could not fetch users");
+    }
+  }
 }
 
 export default ReminderService;
+
