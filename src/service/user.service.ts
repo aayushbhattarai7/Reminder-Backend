@@ -27,8 +27,8 @@ class UserService {
       await mailService.sendMail({
         to: addUser.email,
         text: `Hello ${addUser.name}`,
-        subject: "Greeting of the day",
-        html: `<p>Hey ${addUser.name}, We hope your day gone well ${addUser.DOB}`,
+        subject: "Registered Successfully",
+        html: `<p>Hey ${addUser.name}, You are successfully registered to our app, Thank you for being the family!`,
       });
       return addUser;
     } catch (error: unknown) {

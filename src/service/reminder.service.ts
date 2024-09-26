@@ -76,7 +76,7 @@ class ReminderService {
       return null;
     }
   }
-   async getAllUsers() {
+  async getAllUsers() {
     try {
       const users = await this.userRepo.find();
       return users;
@@ -88,4 +88,3 @@ class ReminderService {
 }
 
 export default ReminderService;
-
