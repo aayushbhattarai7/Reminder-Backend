@@ -55,8 +55,13 @@ class UserService {
         throw HttpException.badRequest("Password didnot matched");
       }
       return user;
-    } catch (error: any) {
-      throw HttpException.badRequest(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+              throw HttpException.badRequest(error.message);
+
+      } else {
+        throw HttpException.internalServerError
+      }
     }
   }
 

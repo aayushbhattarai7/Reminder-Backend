@@ -3,7 +3,7 @@ import { AppDataSource } from "../config/database.config";
 import { AdminDTO } from "../dto/admin.dto";
 import HttpException from "../utils/HttpException.utils";
 import BcryptService from "./bcrypt.service";
-const bcrypTservice = new BcryptService();
+const bcryptService = new BcryptService();
 class AdminService {
   constructor(
     private readonly adminrepo = AppDataSource.getRepository(Admin),
@@ -15,7 +15,7 @@ class AdminService {
       if (emailExist)
         throw HttpException.notFound("Entered Email is not registered yet");
 
-      const hashPassword = await bcrypTservice.hash(data.password);
+      const hashPassword = await bcryptService.hash(data.password);
       const addAdmin = this.adminrepo.create({
         name: data.name,
         email: data.email,
@@ -31,6 +31,26 @@ class AdminService {
       }
     }
   }
+    
+    async loginAdmin(data:AdminDTO):Promise<Admin> {
+        try {
+            const admin = await this.adminrepo.findOne({
+                where: [{ email: data.email }],
+                select:['id','email','password']
+            })
+            if (!admin) throw HttpException.notFound('Invalid Email')
+            const checkPassword = await bcryptService.compare(data.password, admin.password)
+            if (!checkPassword) throw HttpException.badRequest('Password didnot matched')
+            return admin
+        } catch (error: unknown) {
+      if (error instanceof Error) {
+              throw HttpException.badRequest(error.message);
+
+      } else {
+        throw HttpException.internalServerError
+      }
+    }
+    }
 }
 
 export default new AdminService();

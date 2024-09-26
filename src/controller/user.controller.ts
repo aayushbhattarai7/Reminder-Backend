@@ -22,7 +22,6 @@ export class UserController {
 
   async login(req: Request, res: Response) {
     try {
-      console.log(req.body);
       const data = await userService.login(req.body as UserDTO);
       const tokens = webTokenService.generateTokens(
         {
