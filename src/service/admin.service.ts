@@ -36,7 +36,7 @@ class AdminService {
         try {
             const admin = await this.adminrepo.findOne({
                 where: [{ email: data.email }],
-                select:['id','email','password']
+                select:['id','email','password', 'role']
             })
             if (!admin) throw HttpException.notFound('Invalid Email')
             const checkPassword = await bcryptService.compare(data.password, admin.password)

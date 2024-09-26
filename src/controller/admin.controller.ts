@@ -31,7 +31,8 @@ export class AdminController {
                 data: {
                     id: data.id,
                     name: data.name,
-                    email: data.email,
+                email: data.email,
+                    role:data.role,
                     tokens: {
                         accessToken: tokens.accessToken,
                         refreshToken:tokens.refreshToken
