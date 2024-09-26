@@ -20,43 +20,47 @@ export class AdminController {
       }
     }
   }
-    async loginAdmin(req: Request, res: Response) {
-        try {
-            const data = await adminService.loginAdmin(req.body as AdminDTO);
-            const tokens = webTokenService.generateTokens({
-                id: data.id,
-            },data.role
-            )
-            res.status(StatusCodes.SUCCESS).json({
-                data: {
-                    id: data.id,
-                    name: data.name,
-                email: data.email,
-                    role:data.role,
-                    tokens: {
-                        accessToken: tokens.accessToken,
-                        refreshToken:tokens.refreshToken
-                    },message:'LoggedIn Successfully'
-                }
-            })
-        }  catch (error: any) {
+  async loginAdmin(req: Request, res: Response) {
+    try {
+      const data = await adminService.loginAdmin(req.body as AdminDTO);
+      const tokens = webTokenService.generateTokens(
+        {
+          id: data.id,
+        },
+        data.role,
+      );
+      res.status(StatusCodes.SUCCESS).json({
+        data: {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          tokens: {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+          },
+          message: "LoggedIn Successfully",
+        },
+      });
+    } catch (error: any) {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: error?.message,
       });
     }
-    }
+  }
   async getAllEmployee(req: Request, res: Response) {
     try {
-      const data = await adminService.getAllEmployee()
-       res.status(StatusCodes.SUCCESS).json({
+      const data = await adminService.getAllEmployee();
+      res.status(StatusCodes.SUCCESS).json({
         data,
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
-              res.status(StatusCodes.BAD_REQUEST).json(error.message);
-
+        res.status(StatusCodes.BAD_REQUEST).json(error.message);
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal Server Error"})
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: "Internal Server Error" });
       }
     }
   }

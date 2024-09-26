@@ -13,13 +13,12 @@ export class Task extends Base {
 
   @Column({ type: "enum", enum: Status, default: Status.PENDING })
   status: Status;
-    
-    @ManyToOne(() => Admin, (admin) => admin.task, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'admin_id' })
-    admin: Admin
-  
-   
-    @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'user_id' })
-    user:User
+
+  @ManyToOne(() => Admin, (admin) => admin.task, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "admin_id" })
+  admin: Admin;
+
+  @ManyToOne(() => User, (user) => user.tasks, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
+  user: User;
 }

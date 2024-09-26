@@ -3,8 +3,8 @@ export enum Role {
   ADMIN = "ADMIN",
 }
 
-export enum Status{
+export enum Status {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
-  EXPIRED = "EXPIRED"
+  EXPIRED = "EXPIRED",
 }

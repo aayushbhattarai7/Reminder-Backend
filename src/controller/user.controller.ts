@@ -49,8 +49,6 @@ export class UserController {
     }
   }
 
-  
-
   async checkBirthdays(req: Request, res: Response) {
     try {
       const userId = req.user?.id;
@@ -63,20 +61,36 @@ export class UserController {
     }
   }
 
-   async getUserTask(req: Request, res: Response) {
+  async getUserTask(req: Request, res: Response) {
     try {
-      const user_id = req.user?.id
-      const data = await userService.getUserTask(user_id as string)
-       res.status(StatusCodes.SUCCESS).json({
+      const user_id = req.user?.id;
+      const data = await userService.getUserTask(user_id as string);
+      res.status(StatusCodes.SUCCESS).json({
         data,
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
-              res.status(StatusCodes.BAD_REQUEST).json(error.message);
-
+        res.status(StatusCodes.BAD_REQUEST).json(error.message);
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal Server Error"})
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: "Internal Server Error" });
       }
+    }
+  }
+
+    async notification(req: Request, res: Response) {
+    console.log(req.body);
+    try {
+      const user_id = req.user?.id;
+
+      const data = await userService.getNotification(user_id as string);
+      res.status(StatusCodes.SUCCESS).json({ data });
+    } catch (error: any) {
+      console.log("🚀 ~ taskcontroller  ~ error:", error?.message);
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: error?.message,
+      });
     }
   }
 }

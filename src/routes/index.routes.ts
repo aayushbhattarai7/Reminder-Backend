@@ -1,7 +1,7 @@
 import { Router } from "express";
 import user from "./user.routes";
-import admin from './admin.routes'
-import task from './task.routes'
+import admin from "./admin.routes";
+import task from "./task.routes";
 export interface Route {
   path: string;
   route: Router;
@@ -13,12 +13,13 @@ const routes: Route[] = [
     route: user,
   },
   {
-    path: '/admin',
-    route: admin
-  }, {
-    path: '/task',
-    route: task
-  }
+    path: "/admin",
+    route: admin,
+  },
+  {
+    path: "/task",
+    route: task,
+  },
 ];
 routes.forEach((route) => {
   router.use(route.path, route.route);

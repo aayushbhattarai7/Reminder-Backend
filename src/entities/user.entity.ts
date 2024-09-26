@@ -22,13 +22,12 @@ export class User extends Base {
 
   @Column({ name: "password", select: false })
   password: string;
-  
+
   @OneToMany(() => Task, (tasks) => tasks.user, { cascade: true })
   tasks: Task;
 
-    
-  @OneToMany(() => Notification, (notification) => notification.auth, { cascade: true })
+  @OneToMany(() => Notification, (notification) => notification.auth, {
+    cascade: true,
+  })
   notification: Task;
-
 }
-

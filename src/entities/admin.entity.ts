@@ -15,7 +15,7 @@ export class Admin extends Base {
 
   @Column({ name: "password", select: false })
   password: string;
-    
-    @OneToMany(() => Task, (task) => task.admin, { cascade: true })
+
+  @OneToMany(() => Task, (task) => task.admin, { cascade: true })
   task: Task;
 }

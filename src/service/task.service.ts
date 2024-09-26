@@ -12,16 +12,16 @@ class TaskService {
     private readonly taskRepo = AppDataSource.getRepository(Task),
     private readonly adminRepo = AppDataSource.getRepository(Admin),
     private readonly userRepo = AppDataSource.getRepository(User),
-    private readonly notiRepo = AppDataSource.getRepository(Notification)
+    private readonly notiRepo = AppDataSource.getRepository(Notification),
   ) {}
 
   async assignTask(admin_id: string, data: TaskDTO, user_id: string) {
     try {
       const admin = await this.adminRepo.findOneBy({ id: admin_id });
-      if (!admin) throw HttpException.unauthorized('You are not authorized');
+      if (!admin) throw HttpException.unauthorized("You are not authorized");
 
       const user = await this.userRepo.findOneBy({ id: user_id });
-      if (!user) throw HttpException.notFound('Employee not found');
+      if (!user) throw HttpException.notFound("Employee not found");
 
       const assignTask = this.taskRepo.create({
         name: data.name,
@@ -30,14 +30,14 @@ class TaskService {
         admin: admin,
         user: user,
       });
-      
+
       await this.taskRepo.save(assignTask);
       const notification = this.notiRepo.create({
-        notification: 'You have got new task',
-        auth:user
-      })
-      await this.notiRepo.save(notification)
-      return assignTask; 
+        notification: "You have got new task",
+        auth: user,
+      });
+      await this.notiRepo.save(notification);
+      return assignTask;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error?.message);
@@ -47,24 +47,7 @@ class TaskService {
     }
   }
 
-  async getNotification(user_id:string) {
-    try {
-    const user = await this.userRepo.findOneBy({ id: user_id });
-      if (!user) throw HttpException.notFound('Employee not found');
-
-      const notification = await this.notiRepo.createQueryBuilder('noti')
-        .leftJoinAndSelect('noti.auth', 'auth')
-        .where('noti.user_id =:user_id', { user_id })
-      .getMany()
-      return notification
-    } catch (error) {
-       if (error instanceof Error) {
-        throw HttpException.badRequest(error?.message);
-      } else {
-        throw HttpException.internalServerError;
-      }
-    }
-  }
+ 
 }
 
 export default new TaskService();

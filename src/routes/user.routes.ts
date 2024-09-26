@@ -12,6 +12,8 @@ router.post("/login", userController.login);
 router.use(authentication());
 router.use(authorization([Role.USER]));
 router.get("/birthday", userController.checkBirthdays);
-router.get('/task',userController.getUserTask)
+router.get("/task", userController.getUserTask);
+router.get("/notification", userController.notification);
+
 
 export default router;

@@ -7,8 +7,8 @@ import { User } from "./user.entity";
 export class Notification extends Base {
   @Column({ name: "notification" })
   notification: string;
-   
-    @ManyToOne(() => User, (auth) => auth.notification, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'user_id' })
-    auth:User
+
+  @ManyToOne(() => User, (auth) => auth.notification, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
+  auth: User;
 }

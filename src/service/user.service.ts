@@ -7,12 +7,15 @@ const bcryptService = new BcryptService();
 const mailService = new MailService();
 import HttpException from "../utils/HttpException.utils";
 import { Task } from "../entities/task.entity";
+import { Notification } from "../entities/notification.entity";
 
 class UserService {
-  constructor(private readonly userRepo = AppDataSource.getRepository(User),
-        private readonly taskRepo = AppDataSource.getRepository(Task),
+  constructor(
+    private readonly userRepo = AppDataSource.getRepository(User),
+    private readonly taskRepo = AppDataSource.getRepository(Task),
+        private readonly notiRepo = AppDataSource.getRepository(Notification),
 
-  ) { }
+  ) {}
 
   async signup(data: UserDTO) {
     try {
@@ -61,33 +64,31 @@ class UserService {
       return user;
     } catch (error: unknown) {
       if (error instanceof Error) {
-              throw HttpException.badRequest(error.message);
-
+        throw HttpException.badRequest(error.message);
       } else {
-        throw HttpException.internalServerError
+        throw HttpException.internalServerError;
       }
     }
   }
-async getUserTask(user_id:string) {
+  async getUserTask(user_id: string) {
     try {
+      const employees = await this.userRepo
+        .createQueryBuilder("user")
+        .leftJoinAndSelect("user.tasks", "tasks")
+        .where("user.id =:user_id", { user_id })
+        .getMany();
+      if (!employees) throw HttpException.notFound("No task found");
 
-      const employees = await this.userRepo.createQueryBuilder('user')
-        .leftJoinAndSelect('user.tasks', 'tasks')
-        .where('user.id =:user_id',{user_id})
-        .getMany()
-            if(!employees) throw HttpException.notFound('No task found')
-
-      const tasks = await this.taskRepo.createQueryBuilder('task')
-        .leftJoinAndSelect('task.user', 'user')
-        .where('task.user_id =:user_id', { user_id })
-        .getMany()
+      const tasks = await this.taskRepo
+        .createQueryBuilder("task")
+        .leftJoinAndSelect("task.user", "user")
+        .where("task.user_id =:user_id", { user_id })
+        .getMany();
       if (tasks.length > 0) {
-        return {employees,message:`hey, Admin assign you a new task`}
+        return employees;
       } else {
-        return null
+        return null;
       }
-      
-    
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error?.message);
@@ -96,8 +97,6 @@ async getUserTask(user_id:string) {
       }
     }
   }
-
-  
 
   async getByid(id: string) {
     try {
@@ -108,6 +107,29 @@ async getUserTask(user_id:string) {
       return user;
     } catch (error) {
       throw HttpException.notFound("User not found");
+    }
+  }
+
+   async getNotification(user_id: string) {
+    try {
+      const user = await this.userRepo.findOneBy({ id: user_id });
+      if (!user) return;
+
+      const notification = await this.notiRepo
+        .createQueryBuilder("noti")
+        .leftJoinAndSelect("noti.auth", "auth")
+        .where("noti.user_id =:user_id", { user_id })
+        .getMany();
+      const eachNotification = notification.map((notify) => {
+        return notify
+      })
+      return notification;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw HttpException.badRequest(error?.message);
+      } else {
+        throw HttpException.internalServerError;
+      }
     }
   }
 }
