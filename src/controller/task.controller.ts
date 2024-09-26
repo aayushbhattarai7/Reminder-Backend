@@ -2,7 +2,6 @@ import { type Request, type Response } from "express";
 import taskService from "../service/task.service";
 import { TaskDTO } from "../dto/task.dto";
 import { StatusCodes } from "../constant/StatusCodes";
-
 export class TaskController {
     async assigntask(req: Request, res: Response) {
         console.log(req.body)
