@@ -3,7 +3,6 @@ import { StatusCodes } from "../constant/StatusCodes";
 import { type Request, type Response } from "express";
 import { UserDTO } from "../dto/user.dto";
 import webTokenService from "../service/webToken.service";
-import HttpException from "../utils/HttpException.utils";
 import ReminderService from "../service/reminder.service";
 const userService = new UserService();
 const reminderService = new ReminderService();
@@ -50,6 +49,8 @@ export class UserController {
     }
   }
 
+  
+
   async checkBirthdays(req: Request, res: Response) {
     try {
       const userId = req.user?.id;
@@ -59,6 +60,23 @@ export class UserController {
       });
     } catch (error) {
       res.status(StatusCodes.BAD_REQUEST).send("error");
+    }
+  }
+
+   async getUserTask(req: Request, res: Response) {
+    try {
+      const user_id = req.user?.id
+      const data = await userService.getUserTask(user_id as string)
+       res.status(StatusCodes.SUCCESS).json({
+        data,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+              res.status(StatusCodes.BAD_REQUEST).json(error.message);
+
+      } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal Server Error"})
+      }
     }
   }
 }

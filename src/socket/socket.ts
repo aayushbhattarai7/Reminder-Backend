@@ -3,6 +3,8 @@ import webTokenService from "../service/webToken.service";
 import { DotenvConfig } from "../config/env.config";
 import ReminderService from "../service/reminder.service";
 import cron from "node-cron";
+import taskService from "../service/task.service";
+import UserService from "../service/user.service";
 
 export class Socket {
   constructor(server: any) {
@@ -18,10 +20,7 @@ export class Socket {
         return next(new Error("You are not authorized"));
       }
       try {
-        const auth = webTokenService.verify(
-          socketToken,
-          DotenvConfig.ACCESS_TOKEN_SECRET,
-        );
+        const auth = webTokenService.verify(socketToken, DotenvConfig.ACCESS_TOKEN_SECRET);
         if (auth) {
           socket.data.user = auth;
           next();
@@ -37,10 +36,7 @@ export class Socket {
       const userId = socket.data.user.id;
       console.log("User connected:", userId);
       socket.join(userId);
-      try {
-      } catch (error) {
-        console.error("Error in sending birthday message:", error);
-      }
+
       cron.schedule("15 1 * * *", async () => {
         const reminderService = new ReminderService();
         const birthdayMessage = await reminderService.checkBirthdays(userId);
@@ -48,6 +44,13 @@ export class Socket {
           io.to(userId).emit("birthday", birthdayMessage);
         }
       });
+          const userService = new UserService() 
+      const getTask = await userService.getUserTask(userId)
+      const tasks = getTask?.message
+       io.to(userId).emit("task-notification", {
+       tasks
+      });
+
       socket.on("disconnect", () => {
         console.log("User disconnected:", userId);
       });

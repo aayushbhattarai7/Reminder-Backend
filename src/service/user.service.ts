@@ -6,9 +6,13 @@ import { MailService } from "./mail.service";
 const bcryptService = new BcryptService();
 const mailService = new MailService();
 import HttpException from "../utils/HttpException.utils";
+import { Task } from "../entities/task.entity";
 
 class UserService {
-  constructor(private readonly userRepo = AppDataSource.getRepository(User)) {}
+  constructor(private readonly userRepo = AppDataSource.getRepository(User),
+        private readonly taskRepo = AppDataSource.getRepository(Task),
+
+  ) { }
 
   async signup(data: UserDTO) {
     try {
@@ -64,6 +68,36 @@ class UserService {
       }
     }
   }
+async getUserTask(user_id:string) {
+    try {
+
+      const employees = await this.userRepo.createQueryBuilder('user')
+        .leftJoinAndSelect('user.tasks', 'tasks')
+        .where('user.id =:user_id',{user_id})
+        .getMany()
+            if(!employees) throw HttpException.notFound('No task found')
+
+      const tasks = await this.taskRepo.createQueryBuilder('task')
+        .leftJoinAndSelect('task.user', 'user')
+        .where('task.user_id =:user_id', { user_id })
+        .getMany()
+      if (tasks.length > 0) {
+        return {employees,message:`hey, Admin assign you a new task`}
+      } else {
+        return null
+      }
+      
+    
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw HttpException.badRequest(error?.message);
+      } else {
+        throw HttpException.internalServerError;
+      }
+    }
+  }
+
+  
 
   async getByid(id: string) {
     try {

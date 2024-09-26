@@ -12,7 +12,7 @@ class TaskService {
      private readonly userRepo = AppDataSource.getRepository(User)
 ) { }
     
-    async assignTask(admin_id:string,data: TaskDTO, user_id:string):Promise<Task> {
+    async assignTask(admin_id:string,data: TaskDTO, user_id:string) {
         try {
             const admin = await this.adminrepo.findOneBy({ id: admin_id })
             if (!admin) throw HttpException.unauthorized('You are not authorized')
@@ -25,7 +25,6 @@ class TaskService {
               status:Status.PENDING,
               admin: admin,
               user:user
-                
             })
             await this.taskRepo.save(assignTask)
             return assignTask
@@ -37,6 +36,9 @@ class TaskService {
       }
     }
     }
+  
+  
+ 
 }
 
 export default new TaskService()
