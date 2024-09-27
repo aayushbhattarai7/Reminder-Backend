@@ -11,8 +11,7 @@ function listen() {
   httpServer.listen(PORT);
   console.log(`Server is Listening in port: ${DotenvConfig.PORT}`);
 }
-const reminderService = new ReminderService();
-reminderService.startjob();
+// reminderService.startjob();
 
 AppDataSource.initialize()
   .then(async () => {

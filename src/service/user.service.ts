@@ -10,7 +10,7 @@ import { Task } from "../entities/task.entity";
 import { Notification } from "../entities/notification.entity";
 import { Admin } from "../entities/admin.entity";
 import { Status } from "../constant/enum";
-
+import ReminderService from "./reminder.service";
 class UserService {
   constructor(
     private readonly userRepo = AppDataSource.getRepository(User),
@@ -75,7 +75,6 @@ class UserService {
   async getUserTask(user_id: string) {
     try {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
 
       const employees = await this.userRepo
         .createQueryBuilder("user")
@@ -132,7 +131,6 @@ class UserService {
     try {
       const user = await this.userRepo.findOneBy({ id: user_id });
       if (!user) return;
-
       const notification = await this.notiRepo
         .createQueryBuilder("noti")
         .leftJoinAndSelect("noti.auth", "auth")
@@ -147,6 +145,7 @@ class UserService {
       }
     }
   }
+
   async completeTask(task_id: string, user_id: string) {
     try {
       const task = await this.taskRepo.findOneBy({ id: task_id });
@@ -173,8 +172,6 @@ class UserService {
       }
     }
   }
-
-  async expiredTask(task_id: string) {}
 }
 
 export default UserService;

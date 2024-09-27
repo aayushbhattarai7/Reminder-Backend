@@ -19,9 +19,4 @@ export class Admin extends Base {
 
   @OneToMany(() => Task, (task) => task.admin, { cascade: true })
   task: Task;
-
-  @OneToMany(() => Notification, (notifications) => notifications.admin, {
-    cascade: true,
-  })
-  notifications: Notification;
 }

@@ -4,7 +4,6 @@ import { TaskDTO } from "../dto/task.dto";
 import { StatusCodes } from "../constant/StatusCodes";
 export class TaskController {
   async assigntask(req: Request, res: Response) {
-    console.log(req.body, "hahah");
     try {
       const admin_id = req.user?.id;
       const user_id = req.params.id;

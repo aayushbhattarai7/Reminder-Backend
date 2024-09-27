@@ -6,7 +6,7 @@ import webTokenService from "../service/webToken.service";
 import ReminderService from "../service/reminder.service";
 import HttpException from "../utils/HttpException.utils";
 const userService = new UserService();
-const reminderService = new ReminderService();
+// const reminderService = new ReminderService();
 export class UserController {
   async create(req: Request, res: Response) {
     try {
@@ -50,17 +50,17 @@ export class UserController {
     }
   }
 
-  async checkBirthdays(req: Request, res: Response) {
-    try {
-      const userId = req.user?.id;
-      const data = await reminderService.checkBirthdays(userId as string);
-      res.status(StatusCodes.SUCCESS).json({
-        data,
-      });
-    } catch (error) {
-      res.status(StatusCodes.BAD_REQUEST).send("error");
-    }
-  }
+  // async checkBirthdays(req: Request, res: Response) {
+  //   try {
+  //     const userId = req.user?.id;
+  //     const data = await reminderService.checkBirthdays(userId as string);
+  //     res.status(StatusCodes.SUCCESS).json({
+  //       data,
+  //     });
+  //   } catch (error) {
+  //     res.status(StatusCodes.BAD_REQUEST).send("error");
+  //   }
+  // }
 
   async getUserTask(req: Request, res: Response) {
     try {
@@ -81,7 +81,6 @@ export class UserController {
   }
 
   async notification(req: Request, res: Response) {
-    console.log(req.body);
     try {
       const user_id = req.user?.id;
 

@@ -35,6 +35,7 @@ class TaskService {
       const notification = this.notiRepo.create({
         notification: "You have got new task",
         auth: user,
+        task: assignTask,
       });
       await this.notiRepo.save(notification);
       return assignTask;
@@ -49,3 +50,6 @@ class TaskService {
 }
 
 export default new TaskService();
+
+/*
+ */

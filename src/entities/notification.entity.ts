@@ -1,20 +1,22 @@
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import Base from "./base.entity";
-import { Status } from "../constant/enum";
-import { Admin } from "./admin.entity";
 import { User } from "./user.entity";
+import { Task } from "./task.entity";
 @Entity("notification")
 export class Notification extends Base {
   @Column({ name: "notification" })
   notification: string;
 
+  @Column({ default: false })
+  notified: boolean;
+
   @ManyToOne(() => User, (auth) => auth.notification, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   auth: User;
 
-  @ManyToOne(() => Admin, (admin) => admin.notifications, {
+  @ManyToOne(() => Task, (task) => task.notifications, {
     onDelete: "CASCADE",
   })
-  @JoinColumn({ name: "admin_id" })
-  admin: Admin;
+  @JoinColumn({ name: "task_id" })
+  task: Task;
 }
