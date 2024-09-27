@@ -4,6 +4,7 @@ import { type Request, type Response } from "express";
 import { UserDTO } from "../dto/user.dto";
 import webTokenService from "../service/webToken.service";
 import ReminderService from "../service/reminder.service";
+import HttpException from "../utils/HttpException.utils";
 const userService = new UserService();
 const reminderService = new ReminderService();
 export class UserController {
@@ -86,11 +87,33 @@ export class UserController {
 
       const data = await userService.getNotification(user_id as string);
       res.status(StatusCodes.SUCCESS).json({ data });
-    } catch (error: any) {
-      console.log("🚀 ~ taskcontroller  ~ error:", error?.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+         console.log("🚀 ~ taskcontroller  ~ error:", error?.message);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: error?.message,
       });
+      } else {
+        throw HttpException.internalServerError
+      }
+     
+    }
+    }
+  
+  async completeTask(req: Request, res: Response) {
+    try {
+      const user_id = req.user?.id
+      const task_id = req.params.id
+      const data = await userService.completeTask(task_id, user_id as string)
+        res.status(StatusCodes.SUCCESS).json({ data, message:'Task submitted successfully' });
+    } catch (error:unknown) {
+       if (error instanceof Error) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+        message: error?.message,
+      });
+      } else {
+        throw HttpException.internalServerError
+      }
     }
   }
 }

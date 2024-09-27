@@ -8,10 +8,13 @@ const mailService = new MailService();
 import HttpException from "../utils/HttpException.utils";
 import { Task } from "../entities/task.entity";
 import { Notification } from "../entities/notification.entity";
+import { Admin } from "../entities/admin.entity";
+import { Status } from "../constant/enum";
 
 class UserService {
   constructor(
     private readonly userRepo = AppDataSource.getRepository(User),
+        private readonly adminrepo = AppDataSource.getRepository(Admin),
     private readonly taskRepo = AppDataSource.getRepository(Task),
         private readonly notiRepo = AppDataSource.getRepository(Notification),
 
@@ -120,11 +123,30 @@ class UserService {
         .leftJoinAndSelect("noti.auth", "auth")
         .where("noti.user_id =:user_id", { user_id })
         .getMany();
-      const eachNotification = notification.map((notify) => {
-        return notify
-      })
+     
       return notification;
-    } catch (error) {
+    } catch (error:unknown) {
+      if (error instanceof Error) {
+        throw HttpException.badRequest(error?.message);
+      } else {
+        throw HttpException.internalServerError;
+      }
+    }
+   }
+  async completeTask(task_id:string, user_id:string) {
+    try {
+      const task = await this.taskRepo.findOneBy({ id: task_id })
+      if (!task) throw HttpException.notFound('Task not found')
+      
+      const user = await this.userRepo.findOneBy({ id: user_id });
+      if (!user) throw HttpException.unauthorized('You are not authorized');
+
+      const completeTask = await this.taskRepo.update({
+        id: task.id,
+        status:Status.PENDING
+      }, { status: Status.COMPLETED })
+      return completeTask
+    } catch (error:unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error?.message);
       } else {
@@ -132,6 +154,7 @@ class UserService {
       }
     }
   }
+  
 }
 
 export default UserService;

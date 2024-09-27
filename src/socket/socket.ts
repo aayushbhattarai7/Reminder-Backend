@@ -53,21 +53,18 @@ export class Socket {
 
        socket.on("assignTask", async ({ data, user }) => {
   const admin_id = socket.data.user.id;
-  const user_id = Array.isArray(user) && user.length > 0
-    ? user[0].replace(/[{}]/g, "")
-    : null;
 
-  if (user_id) {
-    socket.join(user_id); 
-    console.log(`User with ID ${user_id} has been joined to the room`);
+  if (user) {
+    socket.join(user); 
+    console.log(`User with ID ${user} has been joined to the room`);
 
-    const assign = await taskService.assignTask(admin_id, data, user_id);
+    const assign = await taskService.assignTask(admin_id, data, user);
 
     const userService = new UserService();
-    const task = await userService.getNotification(user_id);
+    const task = await userService.getNotification(user);
 
-    io.to(user_id).emit("task-notification", { task });
-    console.log(`Task notification sent to user ${user_id}`);
+    io.to(user).emit("task-notification", { task });
+    console.log(`Task notification sent to user ${user}`);
   } else {
     console.log("No user ID provided for task assignment");
   }
