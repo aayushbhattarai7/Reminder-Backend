@@ -23,7 +23,7 @@ export class Socket {
       try {
         const auth = webTokenService.verify(
           socketToken,
-          DotenvConfig.ACCESS_TOKEN_SECRET
+          DotenvConfig.ACCESS_TOKEN_SECRET,
         );
         if (auth) {
           socket.data.user = auth;
@@ -51,30 +51,29 @@ export class Socket {
           }
         });
 
-       socket.on("assignTask", async ({ data, user }) => {
-  const admin_id = socket.data.user.id;
+        socket.on("assignTask", async ({ data, user }) => {
+          const admin_id = socket.data.user.id;
 
-  if (user) {
-    socket.join(user); 
-    console.log(`User with ID ${user} has been joined to the room`);
+          if (user) {
+            socket.join(user);
+            console.log(`User with ID ${user} has been joined to the room`);
 
-    const assign = await taskService.assignTask(admin_id, data, user);
+            const assign = await taskService.assignTask(admin_id, data, user);
 
-    const userService = new UserService();
-    const task = await userService.getNotification(user);
+            const userService = new UserService();
+            const task = await userService.getNotification(user);
 
-    io.to(user).emit("task-notification", { task });
-    console.log(`Task notification sent to user ${user}`);
-  } else {
-    console.log("No user ID provided for task assignment");
-  }
-});
-
+            io.to(user).emit("task-notification", { task });
+            console.log(`Task notification sent to user ${user}`);
+          } else {
+            console.log("No user ID provided for task assignment");
+          }
+        });
       } catch (error: any) {
         throw HttpException.badRequest(error?.message);
       }
 
-     socket.on("disconnect", () => {
+      socket.on("disconnect", () => {
         console.log("User disconnected:", userId);
       });
     });

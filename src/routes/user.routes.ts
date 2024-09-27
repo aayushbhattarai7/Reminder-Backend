@@ -14,7 +14,6 @@ router.use(authorization([Role.USER]));
 router.get("/birthday", userController.checkBirthdays);
 router.get("/task", userController.getUserTask);
 router.get("/notification", userController.notification);
-router.patch('/complete/:id', userController.completeTask)
-
+router.patch("/complete/:id", userController.completeTask);
 
 export default router;

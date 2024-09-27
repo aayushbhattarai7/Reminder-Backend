@@ -11,4 +11,10 @@ export class Notification extends Base {
   @ManyToOne(() => User, (auth) => auth.notification, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   auth: User;
+
+  @ManyToOne(() => Admin, (admin) => admin.notifications, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "admin_id" })
+  admin: Admin;
 }

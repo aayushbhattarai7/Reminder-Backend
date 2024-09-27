@@ -9,5 +9,4 @@ router.use(authentication());
 router.use(authorization([Role.ADMIN]));
 router.post("/assign/:id", taskcontroller.assigntask);
 
-
 export default router;

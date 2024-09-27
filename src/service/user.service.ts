@@ -14,10 +14,9 @@ import { Status } from "../constant/enum";
 class UserService {
   constructor(
     private readonly userRepo = AppDataSource.getRepository(User),
-        private readonly adminrepo = AppDataSource.getRepository(Admin),
+    private readonly adminrepo = AppDataSource.getRepository(Admin),
     private readonly taskRepo = AppDataSource.getRepository(Task),
-        private readonly notiRepo = AppDataSource.getRepository(Notification),
-
+    private readonly notiRepo = AppDataSource.getRepository(Notification),
   ) {}
 
   async signup(data: UserDTO) {
@@ -75,12 +74,28 @@ class UserService {
   }
   async getUserTask(user_id: string) {
     try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       const employees = await this.userRepo
         .createQueryBuilder("user")
         .leftJoinAndSelect("user.tasks", "tasks")
+        .leftJoinAndSelect("tasks.admin", "admin")
+
         .where("user.id =:user_id", { user_id })
         .getMany();
       if (!employees) throw HttpException.notFound("No task found");
+
+      await this.taskRepo
+        .createQueryBuilder()
+        .update("task")
+        .set({ status: "EXPIRED" })
+        .where("task.user_id = :user_id", { user_id })
+        .andWhere("task.deadline < :today", { today })
+        .andWhere("task.status !=:status", {
+          status: Status.COMPLETED || Status.EXPIRED,
+        })
+        .execute();
 
       const tasks = await this.taskRepo
         .createQueryBuilder("task")
@@ -113,7 +128,7 @@ class UserService {
     }
   }
 
-   async getNotification(user_id: string) {
+  async getNotification(user_id: string) {
     try {
       const user = await this.userRepo.findOneBy({ id: user_id });
       if (!user) return;
@@ -123,30 +138,8 @@ class UserService {
         .leftJoinAndSelect("noti.auth", "auth")
         .where("noti.user_id =:user_id", { user_id })
         .getMany();
-     
       return notification;
-    } catch (error:unknown) {
-      if (error instanceof Error) {
-        throw HttpException.badRequest(error?.message);
-      } else {
-        throw HttpException.internalServerError;
-      }
-    }
-   }
-  async completeTask(task_id:string, user_id:string) {
-    try {
-      const task = await this.taskRepo.findOneBy({ id: task_id })
-      if (!task) throw HttpException.notFound('Task not found')
-      
-      const user = await this.userRepo.findOneBy({ id: user_id });
-      if (!user) throw HttpException.unauthorized('You are not authorized');
-
-      const completeTask = await this.taskRepo.update({
-        id: task.id,
-        status:Status.PENDING
-      }, { status: Status.COMPLETED })
-      return completeTask
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error?.message);
       } else {
@@ -154,7 +147,34 @@ class UserService {
       }
     }
   }
-  
+  async completeTask(task_id: string, user_id: string) {
+    try {
+      const task = await this.taskRepo.findOneBy({ id: task_id });
+      if (!task) throw HttpException.notFound("Task not found");
+
+      const user = await this.userRepo.findOneBy({ id: user_id });
+      if (!user) throw HttpException.unauthorized("You are not authorized");
+
+      const completeTask = await this.taskRepo.update(
+        {
+          id: task.id,
+          status: Status.PENDING,
+        },
+        { status: Status.COMPLETED },
+      );
+      if (completeTask) {
+      }
+      return completeTask;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw HttpException.badRequest(error?.message);
+      } else {
+        throw HttpException.internalServerError;
+      }
+    }
+  }
+
+  async expiredTask(task_id: string) {}
 }
 
 export default UserService;
