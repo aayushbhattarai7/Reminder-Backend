@@ -155,8 +155,14 @@ export class Socket {
           task.id,
         );
         if (notification) {
-          socket.emit("task-notification", notification);
+            const userService = new UserService();
+            const task = await userService.getNotification(userId);
+
+            io.to(userId).emit("task-notification", { task });
+            console.log(`Task notification sent to user ${userId}`);
+          // io.to(userId).emit("task-notification", notification);
         }
+
       }
         });
 
