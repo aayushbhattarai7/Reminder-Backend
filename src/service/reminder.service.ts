@@ -27,48 +27,45 @@ class ReminderService {
   }
 
   async checkDeadline(userId: string, task_id: string) {
-  try {
-    const today = new Date();
-    const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) throw HttpException.notFound("User not found");
+    try {
+      const today = new Date();
+      const user = await this.userRepo.findOneBy({ id: userId });
+      if (!user) throw HttpException.notFound("User not found");
 
-    const task = await this.taskRepo.findOneBy({ id: task_id });
-    if (!task) throw HttpException.notFound("Task not found");
+      const task = await this.taskRepo.findOneBy({ id: task_id });
+      if (!task) throw HttpException.notFound("Task not found");
 
-    const timeDifference = task.deadline.getTime() - today.getTime();
-    const hoursLeft = Math.ceil(timeDifference / (1000 * 60 * 60));
-  const findNotification = await this.notiRepo
-  .createQueryBuilder('noti')
-  .where('noti.user_id = :userId', { userId })
-  .andWhere('noti.task_id = :task_id', { task_id })
-  .andWhere('noti.notified = :notified', { notified: true })
-    .getOne();
-    if (hoursLeft <= 24) {
-       if (!findNotification) {
-        const notification = this.notiRepo.create({
-        notification: `You have just ${hoursLeft} hours left for ${task.name} task submission`,
-        auth: user,
-        task: task,
-        notified:true
-      });
-      await this.notiRepo.save(notification);
-       await mailService.sendMail({
-        to: user.email,
-        text: "Reminder",
-        subject: `Reminder: Task ${task.name}`,
-        html: `<p>Hello ${user.name},</p><p>You have just 24 hours left for ${task.name} task submission.</p>`,
-       });
-      
-      return notification
-      
-     }
+      const timeDifference = task.deadline.getTime() - today.getTime();
+      const hoursLeft = Math.ceil(timeDifference / (1000 * 60 * 60));
+      const findNotification = await this.notiRepo
+        .createQueryBuilder("noti")
+        .where("noti.user_id = :userId", { userId })
+        .andWhere("noti.task_id = :task_id", { task_id })
+        .andWhere("noti.notified = :notified", { notified: true })
+        .getOne();
+      if (hoursLeft <= 24) {
+        if (!findNotification) {
+          const notification = this.notiRepo.create({
+            notification: `You have just ${hoursLeft} hours left for ${task.name} task submission`,
+            auth: user,
+            task: task,
+            notified: true,
+          });
+          await this.notiRepo.save(notification);
+          await mailService.sendMail({
+            to: user.email,
+            text: "Reminder",
+            subject: `Reminder: Task ${task.name}`,
+            html: `<p>Hello ${user.name},</p><p>You have just 24 hours left for ${task.name} task submission.</p>`,
+          });
+
+          return notification;
+        }
+      }
+    } catch (error: any) {
+      throw HttpException.badRequest(error?.message);
     }
-   
-  } catch (error: any) {
-    throw HttpException.badRequest(error?.message);
   }
-}
-
 
   async checkBirthdays(userId: string) {
     const today = new Date();
