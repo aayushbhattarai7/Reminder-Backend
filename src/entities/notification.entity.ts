@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import Base from "./base.entity";
 import { User } from "./user.entity";
 import { Task } from "./task.entity";
+import { Admin } from "./admin.entity";
 @Entity("notification")
 export class Notification extends Base {
   @Column({ name: "notification" })
@@ -10,7 +11,10 @@ export class Notification extends Base {
   @Column({ default: false })
   notified: boolean;
 
-  @ManyToOne(() => User, (auth) => auth.notification, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (auth) => auth.notification, {
+    onDelete: "CASCADE",
+    nullable: true,
+  })
   @JoinColumn({ name: "user_id" })
   auth: User;
 

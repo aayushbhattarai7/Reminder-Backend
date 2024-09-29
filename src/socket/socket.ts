@@ -7,8 +7,10 @@ import UserService from "../service/user.service";
 import HttpException from "../utils/HttpException.utils";
 import http from "http";
 import express from "express";
+import adminService from "../service/admin.service";
 const app = express();
 const server = http.createServer(app);
+const userService = new UserService();
 
 const io = new Server(server, {
   cors: {
@@ -75,6 +77,27 @@ io.on("connection", async (socket) => {
         const task = await userService.getNotification(user);
         io.to(user).emit("task-notification", { task });
         console.log(`Task notification sent to user ${user}`);
+      } else {
+        console.log("No user ID provided for task assignment");
+      }
+    });
+
+    socket.on("complete", async ({ task_id, admin_id }) => {
+      const user_id = socket.data.user.id;
+
+      console.log("bannggg", task_id, "and admin is", admin_id);
+      if (admin_id) {
+        socket.join(admin_id);
+        console.log(`User with ID ${admin_id} has been joined`);
+        const assign = await userService.completeTask(
+          task_id,
+          user_id,
+          admin_id,
+        );
+
+        const task = await adminService.getNotification(admin_id);
+        io.to(admin_id).emit("complete-notification", { task });
+        console.log(`Task notification sent to admin_id ${admin_id}`);
       } else {
         console.log("No user ID provided for task assignment");
       }

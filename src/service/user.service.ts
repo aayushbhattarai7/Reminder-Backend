@@ -10,12 +10,16 @@ import { Task } from "../entities/task.entity";
 import { Notification } from "../entities/notification.entity";
 import { Admin } from "../entities/admin.entity";
 import { Status } from "../constant/enum";
+import { AdminNotification } from "../entities/adminNotification.entity";
 class UserService {
   constructor(
     private readonly userRepo = AppDataSource.getRepository(User),
     private readonly adminrepo = AppDataSource.getRepository(Admin),
     private readonly taskRepo = AppDataSource.getRepository(Task),
     private readonly notiRepo = AppDataSource.getRepository(Notification),
+    private readonly adminNotiRepo = AppDataSource.getRepository(
+      AdminNotification,
+    ),
   ) {}
 
   async signup(data: UserDTO) {
@@ -145,13 +149,16 @@ class UserService {
     }
   }
 
-  async completeTask(task_id: string, user_id: string) {
+  async completeTask(task_id: string, user_id: string, admin_id: string) {
     try {
       const task = await this.taskRepo.findOneBy({ id: task_id });
       if (!task) throw HttpException.notFound("Task not found");
 
       const user = await this.userRepo.findOneBy({ id: user_id });
       if (!user) throw HttpException.unauthorized("You are not authorized");
+
+      const admin = await this.adminrepo.findOneBy({ id: admin_id });
+      if (!admin) throw HttpException.unauthorized("You are not authorized");
 
       const completeTask = await this.taskRepo.update(
         {
@@ -160,7 +167,15 @@ class UserService {
         },
         { status: Status.COMPLETED },
       );
+      console.log(admin)
+      console.log(task)
       if (completeTask) {
+        const notification = this.adminNotiRepo.create({
+          notification: `${user.name} completed task ${task.name}`,
+          task: task,
+          admin: admin,
+        });
+        await this.adminNotiRepo.save(notification);
       }
       return completeTask;
     } catch (error: unknown) {

@@ -3,6 +3,7 @@ import Base from "./base.entity";
 import { Role } from "../constant/enum";
 import { Task } from "./task.entity";
 import { Notification } from "./notification.entity";
+import { AdminNotification } from "./adminNotification.entity";
 @Entity("admin")
 export class Admin extends Base {
   @Column({ name: "full_name" })
@@ -19,4 +20,9 @@ export class Admin extends Base {
 
   @OneToMany(() => Task, (task) => task.admin, { cascade: true })
   task: Task;
+
+  @OneToMany(() => AdminNotification, (notifications) => notifications.admin, {
+    cascade: true,
+  })
+  notifications: AdminNotification;
 }

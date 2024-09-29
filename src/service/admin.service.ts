@@ -5,12 +5,15 @@ import HttpException from "../utils/HttpException.utils";
 import BcryptService from "./bcrypt.service";
 import { User } from "../entities/user.entity";
 import { Status } from "../constant/enum";
+import { AdminNotification } from "../entities/adminNotification.entity";
 const bcryptService = new BcryptService();
 class AdminService {
   constructor(
     private readonly adminrepo = AppDataSource.getRepository(Admin),
     private readonly userRepo = AppDataSource.getRepository(User),
-  ) {}
+  private readonly adminNotiRepo = AppDataSource.getRepository(
+      AdminNotification,
+    ),  ) {}
 
   async createAdmin(data: AdminDTO): Promise<Admin> {
     try {
@@ -65,6 +68,24 @@ class AdminService {
         .getMany();
       if (!employees) throw HttpException.notFound("No employee found");
       return { employees, message: `hey, Admin assign you a new task` };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw HttpException.badRequest(error?.message);
+      } else {
+        throw HttpException.internalServerError;
+      }
+    }
+  }
+
+  async getNotification(admin_id: string) {
+    try {
+      const user = await this.adminrepo.findOneBy({ id: admin_id });
+      if (!user) return;
+      const notification = await this.adminNotiRepo
+        .createQueryBuilder("noti")
+        .where("noti.admin_id =:admin_id", { admin_id })
+        .getMany();
+      return notification;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error?.message);

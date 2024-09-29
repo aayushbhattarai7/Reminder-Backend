@@ -98,22 +98,22 @@ export class UserController {
     }
   }
 
-  async completeTask(req: Request, res: Response) {
-    try {
-      const user_id = req.user?.id;
-      const task_id = req.params.id;
-      const data = await userService.completeTask(task_id, user_id as string);
-      res
-        .status(StatusCodes.SUCCESS)
-        .json({ data, message: "Task submitted successfully" });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        res.status(StatusCodes.BAD_REQUEST).json({
-          message: error?.message,
-        });
-      } else {
-        throw HttpException.internalServerError;
-      }
-    }
-  }
+  // async completeTask(req: Request, res: Response) {
+  //   try {
+  //     const user_id = req.user?.id;
+  //     const task_id = req.params.id;
+  //     const data = await userService.completeTask(task_id, user_id as string);
+  //     res
+  //       .status(StatusCodes.SUCCESS)
+  //       .json({ data, message: "Task submitted successfully" });
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       res.status(StatusCodes.BAD_REQUEST).json({
+  //         message: error?.message,
+  //       });
+  //     } else {
+  //       throw HttpException.internalServerError;
+  //     }
+  //   }
+  // }
 }
