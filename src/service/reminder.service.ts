@@ -1,12 +1,12 @@
 import { User } from "../entities/user.entity";
 import { AppDataSource } from "../config/database.config";
 import { MailService } from "./mail.service";
-import cron from "node-cron";
 import UserService from "./user.service";
 import { Task } from "../entities/task.entity";
 import HttpException from "../utils/HttpException.utils";
 import { Notification } from "../entities/notification.entity";
-
+import schedule from "node-schedule";
+import { io } from "../socket/socket";
 const mailService = new MailService();
 const userService = new UserService();
 class ReminderService {
@@ -26,7 +26,7 @@ class ReminderService {
     return `${seconds} ${minutes} ${hours} ${day} ${month} *`;
   }
 
-  async checkDeadline(userId: string, task_id: string) {
+  async checkDeadline(userId: string, task_id: string, task_deadline: Date) {
     try {
       const today = new Date();
       const user = await this.userRepo.findOneBy({ id: userId });
@@ -34,34 +34,28 @@ class ReminderService {
 
       const task = await this.taskRepo.findOneBy({ id: task_id });
       if (!task) throw HttpException.notFound("Task not found");
+      const reminderTime = new Date(
+        task.deadline.getTime() - 24 * 60 * 60 * 1000,
+      );
+      schedule.scheduleJob(reminderTime, async () => {
+        const notification = this.notiRepo.create({
+          notification: `You have just 24 hours left for ${task.name} task submission`,
+          auth: user,
+          task: task,
+          notified: true,
+        });
 
-      const timeDifference = task.deadline.getTime() - today.getTime();
-      const hoursLeft = Math.ceil(timeDifference / (1000 * 60 * 60));
-      const findNotification = await this.notiRepo
-        .createQueryBuilder("noti")
-        .where("noti.user_id = :userId", { userId })
-        .andWhere("noti.task_id = :task_id", { task_id })
-        .andWhere("noti.notified = :notified", { notified: true })
-        .getOne();
-      if (hoursLeft <= 24) {
-        if (!findNotification) {
-          const notification = this.notiRepo.create({
-            notification: `You have just ${hoursLeft} hours left for ${task.name} task submission`,
-            auth: user,
-            task: task,
-            notified: true,
-          });
-          await this.notiRepo.save(notification);
-          await mailService.sendMail({
-            to: user.email,
-            text: "Reminder",
-            subject: `Reminder: Task ${task.name}`,
-            html: `<p>Hello ${user.name},</p><p>You have just 24 hours left for ${task.name} task submission.</p>`,
-          });
-
-          return notification;
-        }
-      }
+        await this.notiRepo.save(notification);
+        const tasks = await userService.getNotification(userId);
+        io.to(userId).emit("notification", { tasks });
+        console.log(`Task notification sent to user ${user}`);
+        await mailService.sendMail({
+          to: user.email,
+          text: "Reminder",
+          subject: `Reminder: Task ${task.name}`,
+          html: `<p>Hello ${user.name},</p><p>You have just 24 hours left for ${task.name} task submission.</p>`,
+        });
+      });
     } catch (error: any) {
       throw HttpException.badRequest(error?.message);
     }

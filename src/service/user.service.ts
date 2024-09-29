@@ -10,7 +10,6 @@ import { Task } from "../entities/task.entity";
 import { Notification } from "../entities/notification.entity";
 import { Admin } from "../entities/admin.entity";
 import { Status } from "../constant/enum";
-import ReminderService from "./reminder.service";
 class UserService {
   constructor(
     private readonly userRepo = AppDataSource.getRepository(User),
