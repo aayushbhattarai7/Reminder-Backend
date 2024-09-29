@@ -167,8 +167,7 @@ class UserService {
         },
         { status: Status.COMPLETED },
       );
-      console.log(admin)
-      console.log(task)
+
       if (completeTask) {
         const notification = this.adminNotiRepo.create({
           notification: `${user.name} completed task ${task.name}`,

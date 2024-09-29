@@ -48,7 +48,6 @@ class ReminderService {
         await this.notiRepo.save(notification);
         const tasks = await userService.getNotification(userId);
         io.to(userId).emit("notification", { tasks });
-        console.log(`Task notification sent to user ${user}`);
         await mailService.sendMail({
           to: user.email,
           text: "Reminder",
