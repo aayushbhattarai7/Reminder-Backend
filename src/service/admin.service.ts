@@ -4,7 +4,6 @@ import { AdminDTO } from "../dto/admin.dto";
 import HttpException from "../utils/HttpException.utils";
 import BcryptService from "./bcrypt.service";
 import { User } from "../entities/user.entity";
-import { Status } from "../constant/enum";
 import { AdminNotification } from "../entities/adminNotification.entity";
 const bcryptService = new BcryptService();
 class AdminService {
