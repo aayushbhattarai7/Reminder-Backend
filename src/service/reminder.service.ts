@@ -44,7 +44,7 @@ class ReminderService {
           task: task,
           notified: true,
         });
-
+console.log('ohhh')
         await this.notiRepo.save(notification);
         const tasks = await userService.getNotification(userId);
         io.to(userId).emit("notification", { tasks });

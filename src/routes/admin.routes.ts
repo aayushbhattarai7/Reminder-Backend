@@ -8,7 +8,7 @@ const router: Router = Router();
 router.post("/signup", adminController.createAdmin);
 router.post("/login", adminController.loginAdmin);
 router.use(authentication());
-router.use(authorization([Role.ADMIN]));
+router.use(authorization([Role.ADMIN],));
 router.get("/employee", adminController.getAllEmployee);
 
 export default router;

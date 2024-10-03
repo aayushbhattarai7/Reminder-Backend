@@ -95,7 +95,7 @@ class UserService {
         .where("task.user_id = :user_id", { user_id })
         .andWhere("task.deadline < :today", { today })
         .andWhere("task.status !=:status", {
-          status: Status.COMPLETED || Status.EXPIRED,
+          status: Status.COMPLETED || Status.EXPIRED, 
         })
         .execute();
 

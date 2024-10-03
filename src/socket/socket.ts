@@ -44,8 +44,9 @@ io.on("connection", async (socket) => {
 
   socket.join(userId);
 
-  io.on("send-task-id", async ({ task_id, task_deadline }) => {
+  socket.on("send-task-id", async ({ task_id, task_deadline }) => {
     const reminderService = new ReminderService();
+    console.log(task_id,'hehehaha')
     try {
       const notification = await reminderService.checkDeadline(
         userId,
@@ -55,7 +56,7 @@ io.on("connection", async (socket) => {
     } catch (error) {
       console.error("Error in send-task-id:", error);
     }
-  });
+  }); 
 
   try {
     socket.on("assignTask", async ({ data, user }) => {
