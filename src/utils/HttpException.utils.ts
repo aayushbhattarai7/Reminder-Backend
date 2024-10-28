@@ -1,26 +1,6 @@
-import { StatusCodes } from "../constant/StatusCodes";
 
-class HttpException extends Error {
-  statusCode: number;
-  isCustom: boolean;
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.statusCode = statusCode;
-    this.isCustom = true;
-    Error.captureStackTrace(this, this.constructor);
-  }
 
-  static badRequest(message: string): HttpException {
-    return new HttpException(message, StatusCodes.BAD_REQUEST);
-  }
 
-  static unauthorized(message: string): HttpException {
-    return new HttpException(message, StatusCodes.UNAUTHORIZED);
-  }
-
-  static notFound(message: string): HttpException {
-    return new HttpException(message, StatusCodes.NOT_FOUND);
-  }
 
   static forbidden(message: string): HttpException {
     return new HttpException(message, StatusCodes.FORBIDDEN);
