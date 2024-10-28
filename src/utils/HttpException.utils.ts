@@ -1,9 +1,4 @@
-
-
-
-
-  static forbidden(message: string): HttpException {
-    return new HttpException(message, StatusCodes.FORBIDDEN);
+d scrambled it to make a type specimen 
   }
 
   static internalServerError(message: string): HttpException {
