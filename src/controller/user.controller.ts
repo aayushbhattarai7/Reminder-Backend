@@ -9,7 +9,9 @@ const userService = new UserService();
 // const reminderService = new ReminderService();
 export class UserController {
   async create(req: Request, res: Response) {
+    console.log("jahhdf")
     try {
+      console.log(req.body,"jaja")
       const data = await userService.signup(req.body as UserDTO);
       res.status(StatusCodes.SUCCESS).json({ data });
     } catch (error: any) {

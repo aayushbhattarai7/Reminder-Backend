@@ -48,11 +48,92 @@ console.log('ohhh')
         await this.notiRepo.save(notification);
         const tasks = await userService.getNotification(userId);
         io.to(userId).emit("notification", { tasks });
+        const email = 'np05cp4a220031@iic.edu.np'
         await mailService.sendMail({
           to: user.email,
           text: "Reminder",
           subject: `Reminder: Task ${task.name}`,
-          html: `<p>Hello ${user.name},</p><p>You have just 24 hours left for ${task.name} task submission.</p>`,
+          html: ` <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f9;
+          color: #333;
+          line-height: 1.6;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          padding: 20px;
+          background: #ffffff;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          padding: 10px 0;
+          border-bottom: 1px solid #ddd;
+        }
+        .header h1 {
+          color: #5a67d8;
+          font-size: 24px;
+          margin: 0;
+        }
+        .content {
+          margin-top: 20px;
+        }
+        .content p {
+          margin: 10px 0;
+        }
+        .footer {
+          text-align: center;
+          font-size: 12px;
+          margin-top: 20px;
+          color: #888;
+        }
+        .footer a {
+          color: #5a67d8;
+          text-decoration: none;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 15px;
+          background-color: #5a67d8;
+          color: #fff;
+          text-decoration: none;
+          border-radius: 5px;
+          font-size: 16px;
+        }
+        .btn:hover {
+          background-color: #434dbd;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Milestone Submission Reminder</h1>
+        </div>
+        <div class="content">
+          <p>Dear ${email},</p>
+          <p>This is a gentle reminder to submit your milestone by <strong>1:00 AM today</strong>. Please ensure your submission is on time, as late submissions will lead to a deduction in marks.</p>
+          <p>If you have any questions or need assistance, please do not hesitate to contact your instructor.</p>
+          <p>Best Regards,<br>Your Second Teacher</p>
+        </div>
+        <div class="footer">
+          <p>If you have any questions, reach out to us at <a href="mailto:teacher@school.com">teacher@school.com</a>.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
         });
       });
     } catch (error: any) {

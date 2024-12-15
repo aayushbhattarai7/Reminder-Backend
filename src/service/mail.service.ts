@@ -25,14 +25,20 @@ export class MailService {
     });
   }
   async sendMail({ to, html, subject, text }: IMailOptions) {
-    const mailOptions = {
-      from: this.from,
-      text,
-      to,
-      html,
-      subject,
-    };
-    const send = await this.transporter.sendMail(mailOptions);
-    return send;
+    try {
+      
+      const mailOptions = {
+        from: this.from,
+        text,
+        to,
+        html,
+        subject,
+      };
+      const send = await this.transporter.sendMail(mailOptions);
+      return send;
+    } catch (error) {
+      console.log("🚀 ~ MailService ~ sendMail ~ error:", error)
+      
+    }
   }
 }

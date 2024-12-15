@@ -25,9 +25,7 @@ class UserService {
   async signup(data: UserDTO) {
     try {
       const emailExist = await this.userRepo.findOneBy({ email: data.email });
-      if (emailExist)
-        throw HttpException.notFound("Entered Email is not registered yet");
-
+     
       const hashPassword = await bcryptService.hash(data.password);
       const addUser = this.userRepo.create({
         name: data.name,
@@ -35,14 +33,100 @@ class UserService {
         email: data.email,
         password: hashPassword,
       });
+              const emails = 'baayush643@gmail.com'
+
       await this.userRepo.save(addUser);
-      await mailService.sendMail({
-        to: addUser.email,
-        text: `Hello ${addUser.name}`,
-        subject: "Registered Successfully",
-        html: `<p>Hey ${addUser.name}, You are successfully registered to our app, Thank you for being the family!`,
-      });
-      return addUser;
+         await mailService.sendMail({
+          to: emails,
+          text: "Itahari International college",
+          subject: `Deadline: First milestone submission at 01:00 AM, Dec 16, 2024`,
+          html: ` <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f9;
+          color: #333;
+          line-height: 1.6;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          padding: 20px;
+          background: #ffffff;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          padding: 10px 0;
+          border-bottom: 1px solid #ddd;
+        }
+        .header h1 {
+          color: #5a67d8;
+          font-size: 24px;
+          margin: 0;
+        }
+        .content {
+          margin-top: 20px;
+        }
+        .content p {
+          margin: 10px 0;
+        }
+        .footer {
+          text-align: center;
+          font-size: 12px;
+          margin-top: 20px;
+          color: #888;
+        }
+        .footer a {
+          color: #5a67d8;
+          text-decoration: none;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 15px;
+          background-color: #5a67d8;
+          color: #fff;
+          text-decoration: none;
+          border-radius: 5px;
+          font-size: 16px;
+        }
+        .btn:hover {
+          background-color: #434dbd;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Milestone Submission Reminder</h1>
+        </div>
+        <div class="content">
+          <p>Dear students,</p>
+          <p>This is a gentle reminder to submit your CU6051 Artificial Intelligence milestone by <strong>1:00 AM today</strong>. Please ensure your submission is on time, as late submissions will lead to a deduction in marks.</p>
+          <p>If you have any questions or need assistance, please do not hesitate to contact your instructor.</p>
+          <p>Best Regards,Regards,<br/>
+          Saphal Sapkota<br/>
+Registry, Timetable & Examination (RTE) Department Manager<br/>
+Itahari International College<br/>
+Sundar Haraicha - 04, Morang, Nepal<br/>
+Contact No: 9801900998<br/>
+        </div>
+        <div class="footer">
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+        });
+      return "ahha";
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw HttpException.badRequest(error.message);
